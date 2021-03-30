@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_blue"
+    tools:context=".AddSongFragment">
+
+    <ScrollView
+        android:id="@+id/input_sv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/add_song_to_playlist_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/picture_iv"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="20dp"
+                android:scaleType="fitXY"
+                app:shapeAppearanceOverlay="@style/cornered"
+                app:srcCompat="@drawable/ic_baseline_no_photography_24"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_picture_fab"
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_alignBottom="@id/picture_iv"
+                android:backgroundTint="@color/orange"
+                android:src="@drawable/ic_baseline_add_a_photo_24"/>
+
+            <TextView
+                android:id="@+id/song_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/picture_iv"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:text="Song Name"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/song_name_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/song_name_tv"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:textColor="@color/orange"
+                android:hint="Enter song name"
+                android:textColorHint="@color/light_orange"
+                android:backgroundTint="@color/orange"/>
+
+            <TextView
+                android:id="@+id/artist_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/song_name_et"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:text="Artist Name"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/artist_name_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/artist_name_tv"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:textColor="@color/orange"
+                android:hint="Enter artist name"
+                android:textColorHint="@color/light_orange"
+                android:backgroundTint="@color/orange"/>
+
+            <TextView
+                android:id="@+id/song_link_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/artist_name_et"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:text="Song Link"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/song_link_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/song_link_tv"
+                android:layout_alignStart="@id/picture_iv"
+                android:layout_alignEnd="@id/picture_iv"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:textColor="@color/orange"
+                android:hint="Enter song link"
+                android:textColorHint="@color/light_orange"
+                android:backgroundTint="@color/orange"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/add_song_to_playlist_btn"
+        style="@style/add_song_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="Add song to playlist"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textStyle="bold|italic"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_sv"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
