@@ -55,8 +55,9 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
         /**
          * @param view The view that was clicked
          * @param song Is the song containing info on the clicked song
+         * @param position the index for the song in the songs list
          */
-        void onSongClicked(View view, Song song);
+        void onSongClicked(View view, Song song, int position);
     }
 
     private SongListener listener;
@@ -82,7 +83,7 @@ public class SongRecyclerViewAdapter extends RecyclerView.Adapter<SongRecyclerVi
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onSongClicked(v, songs.get(getAdapterPosition()));
+                        listener.onSongClicked(v, songs.get(getAdapterPosition()), getAdapterPosition());
                     }
                 }
             });

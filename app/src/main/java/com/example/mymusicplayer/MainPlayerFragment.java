@@ -3,6 +3,7 @@ package com.example.mymusicplayer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,8 +30,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -45,6 +44,7 @@ public class MainPlayerFragment extends Fragment
 
     public static final String SONGS_FILE_KEY = "songs_file_key";
     private static final String SONG_FILE_KEY = "song_file_key";
+    private static final String SONG_INDEX_FILE_KEY = "song_index_file_key";
 
     private static final String TAG = "MainPlayerFragment";
 
@@ -54,6 +54,15 @@ public class MainPlayerFragment extends Fragment
 
     private SongRecyclerViewAdapter songRecyclerViewAdapter;
     public static ArrayList<Song> songs;
+    public static Song lastPlayedSong;
+    public static Integer lastPlayedSongIndex;
+
+    // current song components
+    private ImageView mainSongIv;
+    private TextView mainSongTv;
+    private ImageButton mainPrevIb;
+    private ImageButton mainPlayPauseIb;
+    private ImageButton mainNextIb;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +89,7 @@ public class MainPlayerFragment extends Fragment
         FloatingActionButton fab = rootView.findViewById(R.id.add_song_fab);
         fab.setOnClickListener(this);
 
+        initializeMainSongWidgets();
         initializeCurrentPlayingSong();
 
         RecyclerView songsRv = rootView.findViewById(R.id.songs_rv);
@@ -101,6 +111,8 @@ public class MainPlayerFragment extends Fragment
         super.onPause();
 
         MyFileUtils.saveObjectToFile(getContext(), SONGS_FILE_KEY, songs);
+        MyFileUtils.saveObjectToFile(getContext(), SONG_FILE_KEY, lastPlayedSong);
+        MyFileUtils.saveObjectToFile(getContext(), SONG_INDEX_FILE_KEY, lastPlayedSongIndex);
     }
 
     private void initializeFirstSongs() {
@@ -147,24 +159,89 @@ public class MainPlayerFragment extends Fragment
         songs.add(new Song("https://www.syntax.org.il/xtra/bob2.mp3", dirPath + "/pic3.jpg", "The Man in Me", "Bob Dylan"));
     }
 
-    private void initializeCurrentPlayingSong() {
-        ImageView imageView = getActivity().findViewById(R.id.main_song_iv);
-        TextView songNameTv = getActivity().findViewById(R.id.main_song_name_tv);
+    private void initializeMainSongWidgets() {
+        mainSongIv = getActivity().findViewById(R.id.main_song_iv);
+        mainSongTv = getActivity().findViewById(R.id.main_song_name_tv);
+        mainPrevIb = getActivity().findViewById(R.id.main_prev_ib);
+        mainNextIb = getActivity().findViewById(R.id.main_next_ib);
+        mainPlayPauseIb = getActivity().findViewById(R.id.main_play_pause_ib);
 
-        Song song;
-        boolean hasSongBeenClicked = sp.getBoolean(HAS_SONG_BEEN_CLICKED_KEY, false);
-        if (!hasSongBeenClicked) {
-            song = songs.get(0);
-        } else {
-            song = (Song) MyFileUtils.loadObjectFromFile(getContext(), SONG_FILE_KEY);
+        if (MusicService.mediaPlayer.isPlaying()) {
+            mainPlayPauseIb.setImageResource(R.drawable.ic_baseline_pause_24);
         }
 
-        songNameTv.setText(song.getSongName());
+        mainPrevIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MusicService.class);
+                intent.putExtra(MusicService.EXTRA_COMMAND, MusicService.COMMAND_PREV);
 
-        if (song.getSongImagePath() != null) {
-            Glide.with(getContext()).load(song.getSongImagePath()).into(imageView);
+                Song song;
+                if (lastPlayedSongIndex == 0) {
+                    song = songs.get(songs.size() - 1);
+                } else {
+                    song = songs.get(lastPlayedSongIndex - 1);
+                }
+
+                Glide.with(getContext()).load(song.getSongImagePath()).into(mainSongIv);
+                mainSongTv.setText(song.getSongName());
+
+                getActivity().startService(intent);
+            }
+        });
+
+        mainNextIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MusicService.class);
+                intent.putExtra(MusicService.EXTRA_COMMAND, MusicService.COMMAND_NEXT);
+
+                Song song;
+                if (lastPlayedSongIndex == songs.size() - 1) {
+                    song = songs.get(0);
+                } else {
+                    song = songs.get(lastPlayedSongIndex + 1);
+                }
+
+                Glide.with(getContext()).load(song.getSongImagePath()).into(mainSongIv);
+                mainSongTv.setText(song.getSongName());
+
+                getActivity().startService(intent);
+            }
+        });
+
+        mainPlayPauseIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (MusicService.mediaPlayer.isPlaying()) {
+                    mainPlayPauseIb.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                } else {
+                    mainPlayPauseIb.setImageResource(R.drawable.ic_baseline_pause_24);
+                }
+
+                playPauseSong(false);
+            }
+        });
+    }
+
+    private void initializeCurrentPlayingSong() {
+//        Song song;
+        boolean hasSongBeenClicked = sp.getBoolean(HAS_SONG_BEEN_CLICKED_KEY, false);
+        if (!hasSongBeenClicked) {
+//            song = songs.get(0);
+            lastPlayedSong = songs.get(0);
+            lastPlayedSongIndex = 0;
         } else {
-            Glide.with(getContext()).load(R.drawable.ic_baseline_no_photography_24).into(imageView);
+            lastPlayedSong = (Song) MyFileUtils.loadObjectFromFile(getContext(), SONG_FILE_KEY);
+            lastPlayedSongIndex = (Integer) MyFileUtils.loadObjectFromFile(getContext(), SONG_INDEX_FILE_KEY);
+        }
+
+        mainSongTv.setText(lastPlayedSong.getSongName());
+
+        if (lastPlayedSong.getSongImagePath() != null) {
+            Glide.with(getContext()).load(lastPlayedSong.getSongImagePath()).into(mainSongIv);
+        } else {
+            Glide.with(getContext()).load(R.drawable.ic_baseline_no_photography_24).into(mainSongIv);
         }
     }
 
@@ -210,14 +287,32 @@ public class MainPlayerFragment extends Fragment
         itemTouchHelper = new ItemTouchHelper(simpleCallback);
     }
 
+    private void playPauseSong(boolean isSongClicked) {
+        Intent intent = new Intent(getContext(), MusicService.class);
+
+        if (!isSongClicked) {
+            intent.putExtra(MusicService.EXTRA_COMMAND, MusicService.COMMAND_PLAY_PAUSE);
+        }
+
+        getActivity().startService(intent);
+    }
+
     @Override
-    public void onSongClicked(View view, Song song) {
+    public void onSongClicked(View view, Song song, int position) {
         MyFileUtils.saveObjectToFile(getContext(), SONG_FILE_KEY, song);
+        MyFileUtils.saveObjectToFile(getContext(), SONG_INDEX_FILE_KEY, Integer.valueOf(position));
+
+        mainPlayPauseIb.setImageResource(R.drawable.ic_baseline_pause_24);
+
+        lastPlayedSong = song;
+        lastPlayedSongIndex = position;
 
         boolean hasSongBeenClicked = sp.getBoolean(HAS_SONG_BEEN_CLICKED_KEY, false);
         if (!hasSongBeenClicked) {
             sp.edit().putBoolean(HAS_SONG_BEEN_CLICKED_KEY, true).apply();
         }
+
+        playPauseSong(true);
 
         NavDirections action = MainPlayerFragmentDirections.navigateToSongFragment(song);
         Navigation.findNavController(view).navigate(action);

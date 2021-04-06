@@ -56,6 +56,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:id="@+id/main_prev_ib"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@null"
@@ -63,6 +64,7 @@
                     android:src="@drawable/ic_baseline_skip_previous_24"/>
 
                 <ImageButton
+                    android:id="@+id/main_play_pause_ib"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@null"
@@ -70,6 +72,7 @@
                     android:src="@drawable/ic_baseline_play_arrow_24"/>
 
                 <ImageButton
+                    android:id="@+id/main_next_ib"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

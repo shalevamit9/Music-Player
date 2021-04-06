@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/songs_actions_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:src="@drawable/ic_baseline_close_24"/>
+
+<!--    <ImageView-->
+<!--        android:layout_below="@+id/close_btn"-->
+<!--        android:id="@+id/notification_song_iv"-->
+<!--        android:layout_width="110dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:scaleType="fitXY"-->
+<!--        android:src="@drawable/ic_launcher_background" />-->
+
+    <RelativeLayout
+        android:layout_below="@id/close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/notification_song_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Some Song Name"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="italic|bold" />
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notification_song_name_tv"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/notification_prev_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_baseline_skip_previous_black_24" />
+
+            <ImageButton
+                android:id="@+id/notification_play_pause_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_baseline_play_arrow_black_24" />
+
+            <ImageButton
+                android:id="@+id/notification_next_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_baseline_skip_next_black_24"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

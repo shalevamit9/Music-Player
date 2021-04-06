@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,9 @@ public class SongFragment extends Fragment {
 
         TextView mainSongNameTv = getActivity().findViewById(R.id.main_song_name_tv);
         ImageView mainSongIv = getActivity().findViewById(R.id.main_song_iv);
+
         mainSongNameTv.setText(song.getSongName());
+
         if (song.getSongImagePath() != null) {
             Glide.with(getContext()).load(song.getSongImagePath()).into(mainSongIv);
         } else {
