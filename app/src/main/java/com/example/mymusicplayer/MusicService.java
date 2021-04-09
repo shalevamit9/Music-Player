@@ -4,16 +4,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.NotificationTarget;
@@ -39,6 +44,8 @@ public class MusicService extends Service
     private NotificationCompat.Builder builder;
 
     private int songIndex;
+
+    private BroadcastReceiver receiver;
 
     @Nullable
     @Override
@@ -93,6 +100,21 @@ public class MusicService extends Service
                 .setOnlyAlertOnce(true);
 
         startForeground(NOTIFICATION_ID, builder.build());
+
+        IntentFilter filter = new IntentFilter(MainPlayerFragment.SONG_BROADCAST_SERVICE_FILTER);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Song song = (Song) intent.getSerializableExtra(MainPlayerFragment.EXTRA_SONG);
+
+                remoteViews.setTextViewText(R.id.notification_song_name_tv, song.getSongName());
+                remoteViews.setImageViewResource(R.id.notification_play_pause_btn, R.drawable.ic_baseline_pause_black_24);
+
+                manager.notify(NOTIFICATION_ID, builder.build());
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
     }
 
     @Override
@@ -162,19 +184,32 @@ public class MusicService extends Service
             }
         }
 
-
-        remoteViews.setTextViewText(R.id.notification_song_name_tv, MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex).getSongName());
-
-        manager.notify(NOTIFICATION_ID, builder.build());
+        Song song = MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex);
+        sendFragmentBroadcast(song);
+        sendServiceBroadcast(song);
+//        remoteViews.setTextViewText(R.id.notification_song_name_tv, MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex).getSongName());
+//        manager.notify(NOTIFICATION_ID, builder.build());
 
         mediaPlayer.reset();
         try {
-            mediaPlayer.setDataSource(MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex).getSongLink());
+            mediaPlayer.setDataSource(song.getSongLink());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         mediaPlayer.prepareAsync();
+    }
+
+    private void sendServiceBroadcast(Song song) {
+        Intent broadcastService = new Intent(MainPlayerFragment.SONG_BROADCAST_SERVICE_FILTER);
+        broadcastService.putExtra(MainPlayerFragment.EXTRA_SONG, song);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastService);
+    }
+
+    private void sendFragmentBroadcast(Song song) {
+        Intent broadcastFragment = new Intent(MainPlayerFragment.SONG_BROADCAST_FRAGMENT_FILTER);
+        broadcastFragment.putExtra(MainPlayerFragment.EXTRA_SONG, song);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastFragment);
     }
 
     @Override
@@ -186,6 +221,8 @@ public class MusicService extends Service
         }
 
         mediaPlayer.release();
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override

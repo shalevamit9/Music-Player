@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -37,6 +38,9 @@ public class MainPlayerFragment extends Fragment
         implements SongRecyclerViewAdapter.SongListener,
         View.OnClickListener {
 
+    public static final String SONG_BROADCAST_SERVICE_FILTER = "com.example.mymusicplayer.send_song_service";
+    public static final String SONG_BROADCAST_FRAGMENT_FILTER = "com.example.mymusicplayer.send_song_fragment";
+
     public static final String ARG_SONGS = "arg_songs";
 
     private static final String IS_FIRST_TIME_KEY = "is_first_time_key";
@@ -47,6 +51,7 @@ public class MainPlayerFragment extends Fragment
     private static final String SONG_INDEX_FILE_KEY = "song_index_file_key";
 
     private static final String TAG = "MainPlayerFragment";
+    public static final String EXTRA_SONG = "extra_song";
 
     private SharedPreferences sp;
 
@@ -183,8 +188,10 @@ public class MainPlayerFragment extends Fragment
                     song = songs.get(lastPlayedSongIndex - 1);
                 }
 
-                Glide.with(getContext()).load(song.getSongImagePath()).into(mainSongIv);
-                mainSongTv.setText(song.getSongName());
+                sendServiceBroadcast(song);
+                sendFragmentBroadcast(song);
+
+                lastPlayedSong = song;
 
                 getActivity().startService(intent);
             }
@@ -203,8 +210,10 @@ public class MainPlayerFragment extends Fragment
                     song = songs.get(lastPlayedSongIndex + 1);
                 }
 
-                Glide.with(getContext()).load(song.getSongImagePath()).into(mainSongIv);
-                mainSongTv.setText(song.getSongName());
+                sendServiceBroadcast(song);
+                sendFragmentBroadcast(song);
+
+                lastPlayedSong = song;
 
                 getActivity().startService(intent);
             }
@@ -225,10 +234,8 @@ public class MainPlayerFragment extends Fragment
     }
 
     private void initializeCurrentPlayingSong() {
-//        Song song;
         boolean hasSongBeenClicked = sp.getBoolean(HAS_SONG_BEEN_CLICKED_KEY, false);
         if (!hasSongBeenClicked) {
-//            song = songs.get(0);
             lastPlayedSong = songs.get(0);
             lastPlayedSongIndex = 0;
         } else {
@@ -295,6 +302,18 @@ public class MainPlayerFragment extends Fragment
         }
 
         getActivity().startService(intent);
+    }
+
+    private void sendServiceBroadcast(Song song) {
+        Intent broadcastService = new Intent(SONG_BROADCAST_SERVICE_FILTER);
+        broadcastService.putExtra(EXTRA_SONG, song);
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(broadcastService);
+    }
+
+    private void sendFragmentBroadcast(Song song) {
+        Intent broadcastFragment = new Intent(SONG_BROADCAST_FRAGMENT_FILTER);
+        broadcastFragment.putExtra(EXTRA_SONG, song);
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(broadcastFragment);
     }
 
     @Override

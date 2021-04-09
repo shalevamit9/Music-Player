@@ -1,8 +1,14 @@
 package com.example.mymusicplayer;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +21,8 @@ import com.bumptech.glide.Glide;
 public class SongFragment extends Fragment {
 
     private static final String ARG_SONG = "song";
+
+    private BroadcastReceiver receiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +51,27 @@ public class SongFragment extends Fragment {
             Glide.with(getContext()).load(R.drawable.ic_baseline_no_photography_24).into(mainSongIv);
         }
 
+        IntentFilter filter = new IntentFilter(MainPlayerFragment.SONG_BROADCAST_FRAGMENT_FILTER);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Song songReceived = (Song) intent.getSerializableExtra(MainPlayerFragment.EXTRA_SONG);
+
+                Glide.with(context).load(songReceived.getSongImagePath()).into(imageView);
+                songNameTv.setText(songReceived.getSongName());
+                artistNameTv.setText(songReceived.getArtistName());
+            }
+        };
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver, filter);
+
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
 }
