@@ -43,8 +43,6 @@ public class MusicService extends Service
     public static final MediaPlayer mediaPlayer = new MediaPlayer();
     private NotificationCompat.Builder builder;
 
-    private int songIndex;
-
     private BroadcastReceiver receiver;
 
     @Nullable
@@ -69,8 +67,6 @@ public class MusicService extends Service
         }
 
         builder = new NotificationCompat.Builder(this, channelId);
-
-        songIndex = MainPlayerFragment.lastPlayedSongIndex;
 
         remoteViews = new RemoteViews(getPackageName(), R.layout.music_notification_layout);
 
@@ -126,8 +122,6 @@ public class MusicService extends Service
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
                 }
-
-                songIndex = MainPlayerFragment.lastPlayedSongIndex;
 
                 remoteViews.setImageViewResource(R.id.notification_play_pause_btn, R.drawable.ic_baseline_pause_black_24);
 
@@ -187,8 +181,6 @@ public class MusicService extends Service
         Song song = MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex);
         sendFragmentBroadcast(song);
         sendServiceBroadcast(song);
-//        remoteViews.setTextViewText(R.id.notification_song_name_tv, MainPlayerFragment.songs.get(MainPlayerFragment.lastPlayedSongIndex).getSongName());
-//        manager.notify(NOTIFICATION_ID, builder.build());
 
         mediaPlayer.reset();
         try {
