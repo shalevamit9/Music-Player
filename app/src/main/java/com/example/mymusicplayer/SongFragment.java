@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,8 @@ public class SongFragment extends Fragment {
                 Glide.with(context).load(songReceived.getSongImagePath()).into(imageView);
                 songNameTv.setText(songReceived.getSongName());
                 artistNameTv.setText(songReceived.getArtistName());
+
+                MyFileUtils.saveObjectToFile(getContext(), MainPlayerFragment.SONG_FILE_KEY, songReceived);
             }
         };
 

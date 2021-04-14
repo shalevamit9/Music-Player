@@ -47,7 +47,7 @@ public class MainPlayerFragment extends Fragment
     private static final String HAS_SONG_BEEN_CLICKED_KEY = "has_song_been_clicked_key";
 
     public static final String SONGS_FILE_KEY = "songs_file_key";
-    private static final String SONG_FILE_KEY = "song_file_key";
+    public static final String SONG_FILE_KEY = "song_file_key";
     private static final String SONG_INDEX_FILE_KEY = "song_index_file_key";
 
     private static final String TAG = "MainPlayerFragment";
